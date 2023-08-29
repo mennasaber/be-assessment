@@ -35,22 +35,18 @@ exports.get = async (id) => {
   return await User.findById(id);
 };
 
-exports.verify = async (id, otp) => {
-  const existUser = await User.findById(id);
-  if (!existUser) throw new Error("User not found");
-  if (existUser.isVerified) throw new Error("User already verified");
-  if (existUser.otp !== otp) throw new Error("Invalid Otp");
-  existUser.isVerified = true;
-  existUser.otp = null;
-  await existUser.save();
+exports.verify = async (user, otp) => {
+  if (user.isVerified) throw new Error("User already verified");
+  if (user.otp !== otp) throw new Error("Invalid Otp");
+  user.isVerified = true;
+  user.otp = null;
+  await user.save();
 };
 
-exports.resendOtp = async (id) => {
-  const existUser = await User.findById(id);
-  if (!existUser) throw new Error("User not found");
-  if (existUser.isVerified) throw new Error("User already verified");
-  existUser.otp = Math.floor(1000 + Math.random() * 9000).toString();
-  await existUser.save();
+exports.resendOtp = async (user) => {
+  if (user.isVerified) throw new Error("User already verified");
+  user.otp = Math.floor(1000 + Math.random() * 9000).toString();
+  await user.save();
   //TODO: send verification mail
 };
 

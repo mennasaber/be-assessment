@@ -29,10 +29,9 @@ router.post(
   }
 );
 
-router.get("/resendOtp", async (req, res) => {
+router.get("/resendOtp", validators.authValidator, async (req, res) => {
   try {
-    //TODO: send id from token
-    await userService.resendOtp("64ee13b750f361cdcc3bc362");
+    await userService.resendOtp(req.user);
     res.send({ message: "Email sent successfully" });
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -42,10 +41,11 @@ router.get("/resendOtp", async (req, res) => {
 router.get(
   "/verify/:otp",
   validators.requestValidator(userSchemas.verifyEmailSchema),
+  validators.authValidator,
   async (req, res) => {
     try {
       //TODO: send id from token
-      await userService.verify("64ee13b750f361cdcc3bc362", req.params.otp);
+      await userService.verify(req.user, req.params.otp);
       res.send({ message: "User verified successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
