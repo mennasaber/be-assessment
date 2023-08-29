@@ -24,7 +24,7 @@ exports.authValidator = async (req, res, next) => {
     )
       throw new Error("Unauthorized");
     const token = req.headers.authorization.split(" ")[1];
-    const payload = jwt.decode(token, process.env.JWT_TOKEN);
+    const payload = jwt.verify(token, process.env.JWT_TOKEN);
     if (!payload._id) throw new Error("Unauthorized");
     const existUser = await userService.get(payload._id);
     if (!existUser) throw new Error("Unauthorized");
