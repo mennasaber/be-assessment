@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const UserResponseDto = require("../dto/userRespose.dto").UserResponseDto;
 const jwt = require("jsonwebtoken");
+const mailerService = require("../services/mailer.service");
 exports.signUp = async (dto) => {
   const existUser = await User.findOne({
     email: dto.email.toLowerCase(),
@@ -10,8 +11,12 @@ exports.signUp = async (dto) => {
   dto.email = dto.email.toLowerCase();
   dto.otp = Math.floor(1000 + Math.random() * 9000).toString();
   dto.password = await bcrypt.hash(dto.password, 10);
-  //TODO: send verification mail
   const createdUser = await User.create(dto);
+  await mailerService.sendMail(
+    dto.email,
+    "Verify Your Email",
+    `Your OTP for be-assessment is ${dto.otp}`
+  );
   return new UserResponseDto({
     ...createdUser.toObject(),
     token: jwtSign(createdUser),
@@ -24,7 +29,6 @@ exports.signIn = async (dto) => {
   });
   if (!existUser || !(await bcrypt.compare(dto.password, existUser.password)))
     throw new Error("User not found");
-  //TODO: generate token
   return new UserResponseDto({
     ...existUser.toObject(),
     token: jwtSign(existUser),
@@ -47,7 +51,11 @@ exports.resendOtp = async (user) => {
   if (user.isVerified) throw new Error("User already verified");
   user.otp = Math.floor(1000 + Math.random() * 9000).toString();
   await user.save();
-  //TODO: send verification mail
+  await mailerService.sendMail(
+    user.email,
+    "Verify Your Email",
+    `Your OTP for be-assessment is ${user.otp}`
+  );
 };
 
 function jwtSign(user) {
