@@ -1,4 +1,4 @@
-exports.validate = (schema) => async (req, res, next) => {
+exports.requestValidator = (schema) => async (req, res, next) => {
   try {
     await schema.validate(
       {
