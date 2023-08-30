@@ -72,3 +72,11 @@ exports.updateCheckValidator = yup.object({
     id: yup.string().required().strict(),
   }),
 });
+
+exports.removeCheckValidator = yup.object({
+  params: yup.object({ id: yup.string().required().strict() }),
+});
+
+exports.getCheckValidator = yup.object({
+  params: yup.object({ id: yup.string().required().strict() }),
+});

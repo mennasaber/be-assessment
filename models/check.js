@@ -1,16 +1,25 @@
 const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
-const authenticationSchema = mongoose.Schema({
-  username: String,
-  password: String,
-});
-const headerSchema = mongoose.Schema({
-  key: String,
-  value: String,
-});
-const assertSchema = mongoose.Schema({
-  statusCode: Number,
-});
+const authenticationSchema = mongoose.Schema(
+  {
+    username: String,
+    password: String,
+  },
+  { _id: false }
+);
+const headerSchema = mongoose.Schema(
+  {
+    key: String,
+    value: String,
+  },
+  { _id: false }
+);
+const assertSchema = mongoose.Schema(
+  {
+    statusCode: Number,
+  },
+  { _id: false }
+);
 const checkSchema = mongoose.Schema(
   {
     name: String,
@@ -20,15 +29,15 @@ const checkSchema = mongoose.Schema(
       enum: ["HTTP", "HTTPS", "TCP"],
     },
     path: {
-      type: string,
+      type: String,
       required: false,
     },
     port: {
-      type: string,
+      type: String,
       required: false,
     },
     webhook: {
-      type: string,
+      type: String,
       required: false,
     },
     timeout: {
