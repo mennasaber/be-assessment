@@ -2,14 +2,15 @@ const router = require("express").Router();
 const validators = require("../middleware/validator.middleware");
 const checkValidators = require("../validators/check.validator");
 const checkService = require("../services/check.service");
-
+const reportService = require("../services/report.service");
 router.post(
   "/",
   validators.authValidator,
   validators.requestValidator(checkValidators.createCheckValidator),
   async (req, res) => {
     try {
-      await checkService.create(req.body, req.user);
+      const createdCheck = await checkService.create(req.body, req.user);
+      reportService.subscribe(createdCheck);
       res.send({ message: "Check created successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -23,7 +24,13 @@ router.put(
   validators.requestValidator(checkValidators.updateCheckValidator),
   async (req, res) => {
     try {
-      await checkService.update(req.params.id, req.body, req.user);
+      const updatedCheck = await checkService.update(
+        req.params.id,
+        req.body,
+        req.user
+      );
+      reportService.unsubscribe(req.params.id);
+      reportService.subscribe(updatedCheck);
       res.send({ message: "Check updated successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -38,6 +45,7 @@ router.delete(
   async (req, res) => {
     try {
       await checkService.remove(req.params.id, req.user);
+      reportService.unsubscribe(req.params.id);
       res.send({ message: "Check removed successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
