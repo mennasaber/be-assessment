@@ -38,5 +38,5 @@ exports.remove = async (id, user) => {
 };
 
 exports.getAll = async () => {
-  return await CheckModel.find();
+  return await CheckModel.find().populate({ path: "user" });
 };

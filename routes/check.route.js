@@ -11,6 +11,7 @@ router.post(
   async (req, res) => {
     try {
       const createdCheck = await checkService.create(req.body, req.user);
+      createdCheck.user = req.user;
       monitorService.subscribe(createdCheck);
       res.send({ message: "Check created successfully" });
     } catch (error) {
@@ -32,6 +33,7 @@ router.put(
         req.user
       );
       monitorService.unsubscribe(req.params.id);
+      updatedCheck.user = req.user;
       monitorService.subscribe(updatedCheck);
       res.send({ message: "Check updated successfully" });
     } catch (error) {

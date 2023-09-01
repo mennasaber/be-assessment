@@ -1,5 +1,6 @@
 const checkService = require("./check.service");
 const MonitorModel = require("../models/monitor");
+const mailerService = require("./mailer.service");
 const https = require("https");
 const axios = require("axios").default;
 let checks;
@@ -46,6 +47,20 @@ function getRepeatedFN(check) {
           }),
         }
       );
+      const latestMonitor = await MonitorModel.findOne({
+        check: check._id,
+      }).sort({
+        createdAt: -1,
+      });
+      if (latestMonitor && latestMonitor.status === "DOWN") {
+        mailerService.sendMail(
+          check.user.email,
+          `Status Changes`,
+          `Your Check with name ${
+            check.name
+          } its status changed from DOWN to UP at ${new Date()}`
+        );
+      }
       await MonitorModel.create({
         check: check._id,
         status: "UP",
@@ -54,6 +69,20 @@ function getRepeatedFN(check) {
       });
       console.log(check.name + ": " + response.status + " UP");
     } catch (error) {
+      const latestMonitor = await MonitorModel.findOne({
+        check: check._id,
+      }).sort({
+        createdAt: -1,
+      });
+      if (latestMonitor && latestMonitor.status === "UP") {
+        mailerService.sendMail(
+          check.user.email,
+          `Status Changes`,
+          `Your Check with name ${
+            check.name
+          } its status changed from UP to DOWN at ${new Date()}`
+        );
+      }
       await MonitorModel.create({
         check: check._id,
         status: "DOWN",
