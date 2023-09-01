@@ -63,8 +63,8 @@ function getRepeatedFN(check) {
 }
 init();
 
-exports.getChecksReport = async (user) => {
-  const userChecks = await checkService.get(user);
+exports.getChecksReport = async (user, tag) => {
+  const userChecks = await checkService.get(user, tag);
   const monitors = await MonitorModel.aggregate([
     {
       $match: {

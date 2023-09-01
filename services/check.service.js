@@ -19,9 +19,14 @@ exports.getById = async (id, user) => {
   return existCheck;
 };
 
-exports.get = async (user) => {
-  const userChecks = await CheckModel.find({ user: user._id });
-  return userChecks;
+exports.get = async (user, tag = undefined) => {
+  if (tag) {
+    return await CheckModel.find({
+      user: user._id,
+      tags: new RegExp(tag, "ig"),
+    });
+  }
+  return await CheckModel.find({ user: user._id });
 };
 
 exports.remove = async (id, user) => {

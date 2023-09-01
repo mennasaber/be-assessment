@@ -59,6 +59,7 @@ router.delete(
 router.get(
   "/:id",
   validators.authValidator,
+  validators.verificationValidator,
   validators.requestValidator(checkValidators.getCheckValidator),
   async (req, res) => {
     try {
@@ -70,12 +71,17 @@ router.get(
   }
 );
 
-router.get("/", validators.authValidator, async (req, res) => {
-  try {
-    const checks = await checkService.get(req.user);
-    res.send(checks);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
+router.get(
+  "/",
+  validators.authValidator,
+  validators.verificationValidator,
+  async (req, res) => {
+    try {
+      const checks = await checkService.get(req.user);
+      res.send(checks);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
   }
-});
+);
 module.exports = router;

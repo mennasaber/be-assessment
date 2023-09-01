@@ -8,7 +8,10 @@ router.get(
   validators.verificationValidator,
   async (req, res) => {
     try {
-      const reports = await monitorService.getChecksReport(req.user);
+      const reports = await monitorService.getChecksReport(
+        req.user,
+        req.query.tag
+      );
       res.send(reports);
     } catch (error) {
       res.status(500).send(error.message);
