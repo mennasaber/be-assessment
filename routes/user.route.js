@@ -44,7 +44,6 @@ router.get(
   validators.authValidator,
   async (req, res) => {
     try {
-      //TODO: send id from token
       await userService.verify(req.user, req.params.otp);
       res.send({ message: "User verified successfully" });
     } catch (error) {

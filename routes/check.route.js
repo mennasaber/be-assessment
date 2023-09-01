@@ -2,15 +2,16 @@ const router = require("express").Router();
 const validators = require("../middleware/validator.middleware");
 const checkValidators = require("../validators/check.validator");
 const checkService = require("../services/check.service");
-const reportService = require("../services/report.service");
+const monitorService = require("../services/monitor.service");
 router.post(
   "/",
   validators.authValidator,
+  validators.verificationValidator,
   validators.requestValidator(checkValidators.createCheckValidator),
   async (req, res) => {
     try {
       const createdCheck = await checkService.create(req.body, req.user);
-      reportService.subscribe(createdCheck);
+      monitorService.subscribe(createdCheck);
       res.send({ message: "Check created successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -21,6 +22,7 @@ router.post(
 router.put(
   "/:id",
   validators.authValidator,
+  validators.verificationValidator,
   validators.requestValidator(checkValidators.updateCheckValidator),
   async (req, res) => {
     try {
@@ -29,8 +31,8 @@ router.put(
         req.body,
         req.user
       );
-      reportService.unsubscribe(req.params.id);
-      reportService.subscribe(updatedCheck);
+      monitorService.unsubscribe(req.params.id);
+      monitorService.subscribe(updatedCheck);
       res.send({ message: "Check updated successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -41,11 +43,12 @@ router.put(
 router.delete(
   "/:id",
   validators.authValidator,
+  validators.verificationValidator,
   validators.requestValidator(checkValidators.removeCheckValidator),
   async (req, res) => {
     try {
       await checkService.remove(req.params.id, req.user);
-      reportService.unsubscribe(req.params.id);
+      monitorService.unsubscribe(req.params.id);
       res.send({ message: "Check removed successfully" });
     } catch (error) {
       res.status(500).send({ message: error.message });

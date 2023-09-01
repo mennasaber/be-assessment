@@ -34,3 +34,14 @@ exports.authValidator = async (req, res, next) => {
     return res.status(401).json({ message: error.message });
   }
 };
+
+exports.verificationValidator = (req, res, next) => {
+  try {
+    if (req.user.isVerified) {
+      return next();
+    }
+    return res.status(401).json({ message: "Please verify your email" });
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+};

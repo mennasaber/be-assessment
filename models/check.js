@@ -74,6 +74,7 @@ const checkSchema = mongoose.Schema(
     user: {
       type: ObjectId,
       ref: "user",
+      index: true,
     },
   },
   { timestamps: true, autoIndex: true }
