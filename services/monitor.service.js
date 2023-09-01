@@ -28,12 +28,15 @@ function getRepeatedFN(check) {
   return setInterval(async () => {
     const sendDate = new Date();
     try {
-      // TODO: SSL & port & protocol
       const response = await axios.get(
         check.port ? check.url + ":" + check.port : check.url,
         {
           port: check.port,
-          headers: check.headers,
+          headers: check.httpHeaders.reduce(
+            (mappedObj, currentObj) =>
+              Object.assign(mappedObj, { [currentObj.key]: currentObj.value }),
+            {}
+          ),
           timeout: check.timeout * 1000,
           withCredentials: check.authentication !== undefined,
           auth: check.authentication,
