@@ -67,7 +67,6 @@ function getRepeatedFN(check) {
         interval: check.interval,
         responseTime: new Date() - sendDate,
       });
-      console.log(check.name + ": " + response.status + " UP");
     } catch (error) {
       const latestMonitor = await MonitorModel.findOne({
         check: check._id,
@@ -89,7 +88,6 @@ function getRepeatedFN(check) {
         interval: check.interval,
         responseTime: new Date() - sendDate,
       });
-      console.log(check.name + ": " + error + " DOWN");
     }
   }, check.interval * 1000);
 }
