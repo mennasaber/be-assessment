@@ -1,17 +1,17 @@
-const User = require("../models/user");
+const UserModel = require("../models/user");
 const bcrypt = require("bcryptjs");
 const UserResponseDto = require("../dto/userRespose.dto").UserResponseDto;
 const jwt = require("jsonwebtoken");
 const mailerService = require("../services/mailer.service");
 exports.signUp = async (dto) => {
-  const existUser = await User.findOne({
+  const existUser = await UserModel.findOne({
     email: dto.email.toLowerCase(),
   });
   if (existUser) throw new Error("User already exists");
   dto.email = dto.email.toLowerCase();
   dto.otp = Math.floor(1000 + Math.random() * 9000).toString();
   dto.password = await bcrypt.hash(dto.password, 10);
-  const createdUser = await User.create(dto);
+  const createdUser = await UserModel.create(dto);
   await mailerService.sendMail(
     dto.email,
     "Verify Your Email",
@@ -24,7 +24,7 @@ exports.signUp = async (dto) => {
 };
 
 exports.signIn = async (dto) => {
-  const existUser = await User.findOne({
+  const existUser = await UserModel.findOne({
     email: dto.email.toLowerCase(),
   });
   if (!existUser || !(await bcrypt.compare(dto.password, existUser.password)))
@@ -36,7 +36,7 @@ exports.signIn = async (dto) => {
 };
 
 exports.get = async (id) => {
-  return await User.findById(id);
+  return await UserModel.findById(id);
 };
 
 exports.verify = async (user, otp) => {
